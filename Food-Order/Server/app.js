@@ -13,7 +13,7 @@ const authRoute = require("./Controller/auth");
 const passportSetup = require("./Controller/passport");
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: "https://food-ordering-zone.netlify.app",
     credentials: true,
     optionSuccessStatus: 200
 }
