@@ -1,42 +1,42 @@
+// app.js (or index.js)
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const route = require("./Route/index");
 const dotenv = require("dotenv");
-const passport = require("passport");
 const session = require("express-session");
+const passport = require("passport");
+require("./Controller/passport"); // Make sure passport strategies are initialized
 const paymentRoute = require("./Controller/payment");
 const authRoute = require("./Controller/auth");
-const passportSetup = require("./Controller/passport"); // must be imported to trigger strategy setup
+const route = require("./Route/index");
 
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 5500;
 
-// ✅ Correct CORS setup (allow frontend domain)
-const corsOptions = {
-  origin: "https://food-ordering-zone.netlify.app", 
+// ✅ Enable CORS for frontend (Netlify)
+app.use(cors({
+  origin: "https://food-ordering-zone.netlify.app",
   credentials: true,
-};
-app.use(cors(corsOptions));
+}));
 
-// ✅ Parse JSON requests
+// ✅ JSON parser
 app.use(express.json());
 
-// ✅ Secure cookie + session config for cross-origin OAuth
-app.use(
-  session({
-    secret: "K39*Rp2L@9zWq#tD0m", // ✅ Use a strong secret
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      sameSite: "none", // ✅ Needed for cross-origin cookies (Netlify ↔️ Render)
-      secure: true,     // ✅ Must be true for HTTPS (Render uses HTTPS)
-    },
-  })
-);
+// ✅ Session middleware
+app.use(session({
+  secret: "YOUR_SESSION_SECRET_HERE", // replace with strong secret or env var
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: true,        // must be true when using HTTPS (Render uses HTTPS)
+    sameSite: "none",    // allows cross-origin cookies
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  },
+}));
 
-// ✅ Initialize passport middleware
+// ✅ Passport setup
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -45,18 +45,15 @@ app.use("/", route);
 app.use("/api/payment", paymentRoute);
 app.use("/auth", authRoute);
 
-// ✅ MongoDB connection + server start
-const MongoAtlas = process.env.MONGODB_URI;
-const PORT = 5500;
-
-mongoose
-  .connect(MongoAtlas)
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
-    });
-  })
-  .catch((err) => console.log(err));
+// ✅ MongoDB connection
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on https://localhost:${PORT}`);
+  });
+}).catch(err => console.error(err));
 
 
 
