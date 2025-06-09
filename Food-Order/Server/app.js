@@ -6,8 +6,8 @@ const dotenv = require("dotenv");
 const passport = require("passport");
 const cookieSession = require("cookie-session");
 
-const PORT = 5500;
-const HOSTNAME = "localhost";
+const PORT = process.env.PORT || 5500;
+const HOSTNAME = "0.0.0.0";
 const paymentRoute = require("./Controller/payment")
 const authRoute = require("./Controller/auth");
 const passportSetup = require("./Controller/passport");
