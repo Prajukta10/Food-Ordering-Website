@@ -7,42 +7,45 @@ const passport = require("passport");
 const session = require("express-session");
 const paymentRoute = require("./Controller/payment");
 const authRoute = require("./Controller/auth");
-const passportSetup = require("./Controller/passport");
+const passportSetup = require("./Controller/passport"); // must be imported to trigger strategy setup
 
 dotenv.config();
 
 const app = express();
 
+// ✅ Correct CORS setup (allow frontend domain)
 const corsOptions = {
   origin: "https://food-ordering-zone.netlify.app", 
-  credentials: true, 
-  optionSuccessStatus: 200,
+  credentials: true,
 };
-
 app.use(cors(corsOptions));
 
-
+// ✅ Parse JSON requests
 app.use(express.json());
 
+// ✅ Secure cookie + session config for cross-origin OAuth
 app.use(
   session({
-    secret: "K39*Rp2L@9zWq#tD0m",
+    secret: "K39*Rp2L@9zWq#tD0m", // ✅ Use a strong secret
     resave: false,
     saveUninitialized: false,
     cookie: {
-      sameSite: "none", 
-      secure: true,   
+      sameSite: "none", // ✅ Needed for cross-origin cookies (Netlify ↔️ Render)
+      secure: true,     // ✅ Must be true for HTTPS (Render uses HTTPS)
     },
   })
 );
 
+// ✅ Initialize passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
+// ✅ Routes
 app.use("/", route);
-app.use("/api/payment/", paymentRoute);
-app.use("/auth/", authRoute);
+app.use("/api/payment", paymentRoute);
+app.use("/auth", authRoute);
 
+// ✅ MongoDB connection + server start
 const MongoAtlas = process.env.MONGODB_URI;
 const PORT = 5500;
 
@@ -54,10 +57,6 @@ mongoose
     });
   })
   .catch((err) => console.log(err));
-
-
-
-
 
 
 
