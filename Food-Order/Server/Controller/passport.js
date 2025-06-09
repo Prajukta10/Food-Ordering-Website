@@ -9,7 +9,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://localhost:5500/auth/google/callback",
+      callbackURL: "https://food-ordering-zone.netlify.app/auth/google/callback",
       passReqToCallback: true,
     },
     
