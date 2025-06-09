@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const passport = require("passport");
 
-const CLIENT_URL = 'http://localhost:3000';
+const CLIENT_URL = "https://food-ordering-zone.netlify.app";
 
 
 router.get("/login/success", (req, res) => {
@@ -23,7 +23,7 @@ router.get("/login/failure", (req, res) => {
 
 router.get("/logout", (req, res) => {
     req.logout();
-    res.redirect("http://localhost:3000");
+    res.redirect("https://food-ordering-zone.netlify.app");
 });
 
 router.get("/google", 
